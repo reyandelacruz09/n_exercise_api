@@ -3,7 +3,10 @@ import { db } from "../db/database";
 export const userService = {
   // GET all users
   getAllUsers: async () => {
-    return db.selectFrom("users").selectAll().execute();
+    return await db
+      .selectFrom("users")
+      .selectAll()
+      .execute();
   },
 
   // CREATE user

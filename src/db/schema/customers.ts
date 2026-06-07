@@ -1,9 +1,8 @@
-export interface EmployeeTable {
+export interface CustomersTable {
     id: number;
     first_name: string;
     last_name: string;
     email: string;
-    position: string;
-    salary: number;
+    phone: string;
     created_at: Date;
-}
+  }

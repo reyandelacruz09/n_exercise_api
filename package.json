@@ -6,15 +6,17 @@
     "dev": "ts-node src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "migrate": "ts-node src/db/migrate.ts",
+    "seed": "ts-node src/db/seed.ts"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "express": "^5.2.1",
-    "kysely": "^0.28.16",
-    "pg": "^8.20.0"
+    "kysely": "^0.28.17",
+    "pg": "^8.21.0",
+    "wait-on": "^9.0.10"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",

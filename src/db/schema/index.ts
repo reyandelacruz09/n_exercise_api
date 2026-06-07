@@ -1,9 +1,11 @@
-import { UsersTable } from "./users";
-import { TasksTable } from "./tasks";
-import { EmployeeTable } from "./employee";
+import type { UsersTable } from "./users";
+import type { ProductsTable } from "./products";
+import type { OrdersTable } from "./orders";
+import type { CustomersTable } from "./customers";
 
 export interface Database {
   users: UsersTable;
-  tasks: TasksTable;
-  employees: EmployeeTable;
+  customers: CustomersTable;
+  products: ProductsTable;
+  orders: OrdersTable;
 }
