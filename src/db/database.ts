@@ -1,17 +1,11 @@
 import { Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
-
-export interface Database {
-  users: {
-    id: number;
-    name: string;
-  };
-}
+import { Database } from "./schema";
 
 const db = new Kysely<Database>({
   dialect: new PostgresDialect({
     pool: new Pool({
-      host: "db",
+      host: process.env.DB_HOST || "localhost",
       user: "postgres",
       password: "password",
       database: "mydb",

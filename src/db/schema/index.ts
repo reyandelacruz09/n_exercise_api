@@ -1,11 +1,14 @@
-import type { UsersTable } from "./users";
-import type { ProductsTable } from "./products";
-import type { OrdersTable } from "./orders";
-import type { CustomersTable } from "./customers";
+
+import { UsersTable } from "./users";
+import { ProductsTable } from "./products";
+import { CustomersTable } from "./customers";
+import { OrdersTable } from "./orders";
+import { OrderItemsTable } from "./orderItems";
 
 export interface Database {
   users: UsersTable;
-  customers: CustomersTable;
   products: ProductsTable;
+  customers: CustomersTable;
   orders: OrdersTable;
+  order_items: OrderItemsTable;
 }

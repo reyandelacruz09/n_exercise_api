@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { db } from "../db/database";
+import db from "../db/database";
 
 const router = Router();
 
@@ -14,7 +14,7 @@ router.get("/", async (req: Request, res: Response) => {
 
 router.post("/", async (req: Request, res: Response) => {
   try {
-    const { name, email } = req.body;
+    const { name, username, email, password_hash } = req.body;
 
     if (!name || !email) {
       return res.status(400).json({ error: "Missing fields" });
@@ -22,7 +22,12 @@ router.post("/", async (req: Request, res: Response) => {
 
     const result = await db
       .insertInto("users")
-      .values({ name, email })
+      .values({
+        username,
+        email,
+        password_hash,
+        role: "user",
+      })
       .returningAll()
       .execute();
 
