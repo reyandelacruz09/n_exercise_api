@@ -5,13 +5,23 @@ export const getProducts = async (
   req: Request,
   res: Response
 ) => {
-  try {
-    const products = await productService.getProducts();
+  const products = await productService.getProducts();
+  res.json(products);
+};
 
-    res.status(200).json(products);
-  } catch (error) {
-    res.status(500).json({
-      message: "Failed to retrieve products",
+export const getProductById = async (
+  req: Request,
+  res: Response
+) => {
+  const product = await productService.getProductById(
+    Number(req.params.id)
+  );
+
+  if (!product) {
+    return res.status(404).json({
+      message: "Product not found",
     });
   }
+
+  res.json(product);
 };
