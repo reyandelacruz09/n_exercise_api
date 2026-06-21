@@ -1,7 +1,6 @@
 import db from "../db/database";
 
 export const userService = {
-  // GET all users
   getAllUsers: async () => {
     return await db
       .selectFrom("users")
@@ -9,21 +8,36 @@ export const userService = {
       .execute();
   },
 
-  // CREATE user
-  createUser: async (data: { name: string; email: string }) => {
-    return db
+  createUser: async (data: {
+    username: string;
+    email: string;
+    password_hash: string;
+  }) => {
+    return await db
       .insertInto("users")
-      .values(data)
+      .values({
+        username: data.username,
+        email: data.email,
+        password_hash: data.password_hash,
+        role: "user",
+      })
       .returningAll()
-      .execute();
+      .executeTakeFirst();
   },
 
-  // GET single user (optional)
   getUserById: async (id: number) => {
-    return db
+    return await db
       .selectFrom("users")
       .selectAll()
       .where("id", "=", id)
       .executeTakeFirst();
-  }
+  },
+
+  getUserByEmail: async (email: string) => {
+    return await db
+      .selectFrom("users")
+      .selectAll()
+      .where("email", "=", email)
+      .executeTakeFirst();
+  },
 };

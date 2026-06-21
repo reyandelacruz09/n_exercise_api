@@ -25,3 +25,35 @@ export const getProductById = async (
 
   res.json(product);
 };
+
+export const createProduct = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { name, price, stock } = req.body;
+
+    if (!name || price === undefined || stock === undefined) {
+      return res.status(400).json({
+        message: "Name, price, and stock are required",
+      });
+    }
+
+    const product = await productService.createProduct(
+      name,
+      Number(price),
+      Number(stock)
+    );
+
+    return res.status(201).json({
+      message: "Product created successfully",
+      product,
+    });
+  } catch (error) {
+    console.error("Create product error:", error);
+
+    return res.status(500).json({
+      message: "Failed to create product",
+    });
+  }
+};
