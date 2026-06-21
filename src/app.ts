@@ -5,27 +5,30 @@ import customerRoutes from "./routes/customerRoutes";
 import productRoutes from "./routes/productRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import authRoutes from "./routes/authRoutes";
+import cors from "cors";
 
 dotenv.config();
 const app = express();
 
-app.use((req, res, next) => {
-  console.log("REQUEST:", req.method, req.url);
-  next();
-});
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+  console.log("REQUEST:", req.method, req.url);
+  console.log("CONTENT TYPE:", req.headers["content-type"]);
+  next();
+});
 
 app.use("/auth", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/users", usersRoute);
-
-app.get("/", (req, res) => {
-  res.send("API running");
-});
 
 const PORT = Number(process.env.PORT) || 3000;
 
