@@ -1,21 +1,18 @@
+import dotenv from "dotenv";
 import { Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
+import type { Database } from "./schemas";
 
-export interface Database {
-  users: {
-    id: number;
-    name: string;
-  };
+dotenv.config();
+
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is missing");
 }
 
 const db = new Kysely<Database>({
   dialect: new PostgresDialect({
     pool: new Pool({
-      host: "db",
-      user: "postgres",
-      password: "password",
-      database: "mydb",
-      port: 5432,
+      connectionString: process.env.DATABASE_URL,
     }),
   }),
 });
