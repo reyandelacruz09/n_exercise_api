@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { userService } from "../services/userService";
+import { auditLogService } from "../services/auditLogService";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -27,6 +28,14 @@ export const register = async (req: Request, res: Response) => {
       username,
       email,
       password_hash,
+    });
+
+    await auditLogService.log({
+      entity: "user",
+      action: "register",
+      entity_id: user?.id,
+      description: `Registered user '${username}' (${email})`,
+      user_id: user?.id ?? null,
     });
 
     return res.status(201).json({
@@ -98,6 +107,14 @@ export const login = async (
         expiresIn: "1d"
       }
     );
+
+    await auditLogService.log({
+      entity: "user",
+      action: "login",
+      entity_id: user.id,
+      description: `User '${user.username}' (${user.email}) logged in`,
+      user_id: user.id,
+    });
 
     return res.status(200).json({
       message: "Login successful",

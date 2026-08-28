@@ -6,6 +6,8 @@ import productRoutes from "./routes/productRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import authRoutes from "./routes/authRoutes";
 import dashboardRoutes from "./routes/dashboardRoutes";
+import stockTransactionRoutes from "./routes/stockTransactionRoutes";
+import auditLogRoutes from "./routes/auditLogRoutes";
 import cors from "cors";
 
 dotenv.config();
@@ -27,6 +29,8 @@ app.use((req, res, next) => {
 
 app.use("/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/stock-transactions", stockTransactionRoutes);
+app.use("/api/audit-logs", auditLogRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);

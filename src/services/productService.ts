@@ -18,7 +18,9 @@ export const getProductById = async (id: number) => {
 export const createProduct = async (
   name: string,
   price: number,
-  stock: number
+  stock: number,
+  cost_price?: number | null,
+  reorder_level?: number | null
 ) => {
   return await db
     .insertInto("products")
@@ -26,6 +28,8 @@ export const createProduct = async (
       name,
       price,
       stock,
+      cost_price: cost_price ?? null,
+      reorder_level: reorder_level ?? null,
     })
     .returningAll()
     .executeTakeFirst();
@@ -37,6 +41,8 @@ export const updateProduct = async (
     name?: string;
     price?: number;
     stock?: number;
+    cost_price?: number | null;
+    reorder_level?: number | null;
   }
 ) => {
   return await db

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as customerService from "../services/customerService";
+import { auditLogService } from "../services/auditLogService";
 
 export const getCustomers = async (
   req: Request,
@@ -63,6 +64,14 @@ export const createCustomer = async(
       phone
     );
 
+    await auditLogService.log({
+      entity: "customer",
+      action: "add",
+      entity_id: customer?.id,
+      description: `Created customer '${customer?.first_name ?? ""} ${customer?.last_name ?? ""}' (${customer?.email ?? email})`,
+      user_id: (req as any).user?.id ?? null,
+    });
+
     return res.status(201).json({
       message: "Customer created successfully",
       customer,
@@ -111,6 +120,14 @@ export const updateCustomer = async (
       ...(phone !== undefined && { phone }),
     });
 
+    await auditLogService.log({
+      entity: "customer",
+      action: "update",
+      entity_id: customer?.id,
+      description: `Updated customer '${customer?.first_name ?? ""} ${customer?.last_name ?? ""}'`,
+      user_id: (req as any).user?.id ?? null,
+    });
+
     return res.json({
       message: "Customer updated successfully",
       customer,
@@ -120,6 +137,43 @@ export const updateCustomer = async (
 
     return res.status(500).json({
       message: "Failed to update customer",
+    });
+  }
+};
+
+export const deleteCustomer = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const id = Number(req.params.id);
+
+    const existing = await customerService.getCustomerById(id);
+
+    if (!existing) {
+      return res.status(404).json({
+        message: "Customer not found",
+      });
+    }
+
+    await customerService.deleteCustomer(id);
+
+    await auditLogService.log({
+      entity: "customer",
+      action: "delete",
+      entity_id: id,
+      description: `Deleted customer '${existing.first_name} ${existing.last_name}' (${existing.email})`,
+      user_id: (req as any).user?.id ?? null,
+    });
+
+    return res.json({
+      message: "Customer deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete customer error:", error);
+
+    return res.status(500).json({
+      message: "Failed to delete customer",
     });
   }
 };

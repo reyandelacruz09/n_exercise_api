@@ -16,5 +16,10 @@ router.put(
     authenticateToken,
     customerController.updateCustomer
 );
+router.delete(
+    "/:id",
+    authenticateToken,
+    customerController.deleteCustomer
+);
 
 export default router;

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as orderService from "../services/orderService";
 import { OrderValidationError } from "../services/orderService";
 import * as customerService from "../services/customerService";
+import { auditLogService } from "../services/auditLogService";
 
 export const getOrders = async (
   req: Request,
@@ -112,6 +113,14 @@ export const createOrder = async(
       (req as any).user?.id ?? null
     );
 
+    await auditLogService.log({
+      entity: "order",
+      action: "add",
+      entity_id: order?.id,
+      description: `Created order #${order?.id ?? ""} for customer #${customer_id} with ${validatedItems.length} item(s)`,
+      user_id: (req as any).user?.id ?? null,
+    });
+
     return res.status(201).json({
       message: "Order created successfully",
       order,
@@ -169,6 +178,14 @@ export const updateOrder = async (
       });
     }
 
+    await auditLogService.log({
+      entity: "order",
+      action: "update",
+      entity_id: order.id,
+      description: `Updated order #${order.id}${status ? ` status to '${status}'` : ""}`,
+      user_id: (req as any).user?.id ?? null,
+    });
+
     return res.json({
       message: "Order updated successfully",
       order,
@@ -202,6 +219,14 @@ export const deleteOrder = async (
         message: "Order not found",
       });
     }
+
+    await auditLogService.log({
+      entity: "order",
+      action: "delete",
+      entity_id: order.id,
+      description: `Deleted order #${order.id} for customer #${order.customer_id}`,
+      user_id: (req as any).user?.id ?? null,
+    });
 
     return res.json({
       message: "Order deleted successfully",
