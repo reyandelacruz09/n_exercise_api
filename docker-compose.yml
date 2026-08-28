@@ -29,7 +29,7 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgres://postgres:password@db:5432/mydb
-      JWT_SECRET: change_this_to_a_long_random_secret_for_development
+      JWT_SECRET: ${JWT_SECRET:-change_this_to_a_long_random_secret_for_development}
 
 volumes:
   pgdata:

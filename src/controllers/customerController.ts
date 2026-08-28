@@ -76,3 +76,50 @@ export const createCustomer = async(
     });
   }
 }
+
+export const updateCustomer = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { id } = req.params;
+    const { first_name, last_name, email, phone } = req.body;
+
+    if (
+      first_name === undefined &&
+      last_name === undefined &&
+      email === undefined &&
+      phone === undefined
+    ) {
+      return res.status(400).json({
+        message: "At least one field is required",
+      });
+    }
+
+    const existing = await customerService.getCustomerById(Number(id));
+
+    if (!existing) {
+      return res.status(404).json({
+        message: "Customer not found",
+      });
+    }
+
+    const customer = await customerService.updateCustomer(Number(id), {
+      ...(first_name !== undefined && { first_name }),
+      ...(last_name !== undefined && { last_name }),
+      ...(email !== undefined && { email }),
+      ...(phone !== undefined && { phone }),
+    });
+
+    return res.json({
+      message: "Customer updated successfully",
+      customer,
+    });
+  } catch (error) {
+    console.error("Update customer error:", error);
+
+    return res.status(500).json({
+      message: "Failed to update customer",
+    });
+  }
+};

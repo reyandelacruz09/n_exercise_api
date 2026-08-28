@@ -57,3 +57,44 @@ export const createProduct = async (
     });
   }
 };
+
+export const updateProduct = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { id } = req.params;
+    const { name, price, stock } = req.body;
+
+    if (!name && price === undefined && stock === undefined) {
+      return res.status(400).json({
+        message: "At least one field is required",
+      });
+    }
+
+    const existing = await productService.getProductById(Number(id));
+
+    if (!existing) {
+      return res.status(404).json({
+        message: "Product not found",
+      });
+    }
+
+    const product = await productService.updateProduct(Number(id), {
+      ...(name !== undefined && { name }),
+      ...(price !== undefined && { price: Number(price) }),
+      ...(stock !== undefined && { stock: Number(stock) }),
+    });
+
+    return res.json({
+      message: "Product updated successfully",
+      product,
+    });
+  } catch (error) {
+    console.error("Update product error:", error);
+
+    return res.status(500).json({
+      message: "Failed to update product",
+    });
+  }
+};

@@ -11,5 +11,10 @@ router.post(
     authenticateToken,
     customerController.createCustomer
 );
+router.put(
+    "/:id",
+    authenticateToken,
+    customerController.updateCustomer
+);
 
 export default router;

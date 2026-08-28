@@ -5,6 +5,7 @@ import customerRoutes from "./routes/customerRoutes";
 import productRoutes from "./routes/productRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import authRoutes from "./routes/authRoutes";
+import dashboardRoutes from "./routes/dashboardRoutes";
 import cors from "cors";
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/auth", authRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);

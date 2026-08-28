@@ -4,12 +4,10 @@ import { authenticateToken } from "../middleware/authMiddleware";
 
 const router = Router();
 
-router.get("/", orderController.getOrders);
-router.get("/:id", orderController.getOrdersById);
-router.post(
-    "/",
-    authenticateToken,
-    orderController.createOrder
-);
+router.get("/", authenticateToken, orderController.getOrders);
+router.get("/:id", authenticateToken, orderController.getOrdersById);
+router.post("/", authenticateToken, orderController.createOrder);
+router.put("/:id", authenticateToken, orderController.updateOrder);
+router.delete("/:id", authenticateToken, orderController.deleteOrder);
 
 export default router;
