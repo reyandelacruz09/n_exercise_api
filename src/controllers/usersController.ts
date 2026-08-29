@@ -2,9 +2,11 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { userService } from "../services/userService";
 
+const VALID_ROLES = ["admin", "user"];
+
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    const users = await userService.getAllUsers();
+    const users = await userService.getAllUsersWithPermissions();
     res.json(users);
   } catch (error) {
     console.error("Get users error:", error);
@@ -51,11 +53,19 @@ export const createUser = async (req: Request, res: Response) => {
 
     const password_hash = await bcrypt.hash(password, 10);
 
+    const userRole = role ?? "user";
+
+    if (!VALID_ROLES.includes(userRole)) {
+      return res.status(400).json({
+        message: `Invalid role. Allowed roles: ${VALID_ROLES.join(", ")}`,
+      });
+    }
+
     const user = await userService.createUser({
       username,
       email,
       password_hash,
-      role,
+      role: userRole,
     });
 
     return res.status(201).json({
@@ -90,6 +100,20 @@ export const updateUser = async (req: Request, res: Response) => {
         .json({ message: "At least one field (username, email, role) is required" });
     }
 
+    if (role && !VALID_ROLES.includes(role)) {
+      return res.status(400).json({
+        message: `Invalid role. Allowed roles: ${VALID_ROLES.join(", ")}`,
+      });
+    }
+
+    const auth: any = (req as any).user;
+
+    if (auth?.id === id && role && role !== existingUser.role) {
+      return res.status(400).json({
+        message: "You cannot change your own role",
+      });
+    }
+
     if (email && email !== existingUser.email) {
       const emailTaken = await userService.getUserByEmail(email);
       if (emailTaken) {
@@ -121,6 +145,12 @@ export const deleteUser = async (req: Request, res: Response) => {
 
     if (!existingUser) {
       return res.status(404).json({ message: "User not found" });
+    }
+
+    const auth: any = (req as any).user;
+
+    if (auth?.id === id) {
+      return res.status(400).json({ message: "You cannot delete your own account" });
     }
 
     await userService.deleteUser(id);

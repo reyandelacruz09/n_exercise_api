@@ -3,6 +3,27 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { userService } from "../services/userService";
 import { auditLogService } from "../services/auditLogService";
+import { permissionService } from "../services/permissionService";
+
+const userResponse = async (user: {
+  id: number;
+  username: string;
+  email: string;
+  role: string;
+}) => {
+  const permissions =
+    user.role === "admin"
+      ? (await permissionService.getAllPermissions()).map((p) => p.name)
+      : await permissionService.getPermissionsForRole(user.role);
+
+  return {
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    role: user.role,
+    permissions,
+  };
+};
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -120,12 +141,12 @@ export const login = async (
 
     return res.status(200).json({
       message: "Login successful",
-      user: {
+      user: await userResponse({
         id: user.id,
         username: user.username,
         email: user.email,
         role: user.role,
-      },
+      }),
     });
   } catch (error) {
     console.error("Login error:", error);
@@ -165,12 +186,12 @@ export const me = async (req: Request, res: Response) => {
     }
 
     return res.json({
-      user: {
+      user: await userResponse({
         id: user.id,
         username: user.username,
         email: user.email,
         role: user.role,
-      },
+      }),
     });
   } catch (error) {
     console.error("Get current user error:", error);
@@ -256,12 +277,12 @@ export const updateProfile = async (req: Request, res: Response) => {
 
     return res.json({
       message: "Profile updated successfully",
-      user: {
-        id: updated?.id,
-        username: updated?.username,
-        email: updated?.email,
-        role: updated?.role,
-      },
+      user: await userResponse({
+        id: updated?.id!,
+        username: updated?.username!,
+        email: updated?.email!,
+        role: updated?.role!,
+      }),
     });
   } catch (error) {
     console.error("Update profile error:", error);

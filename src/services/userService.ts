@@ -1,4 +1,5 @@
 import db from "../db/database";
+import { permissionService } from "./permissionService";
 
 export const userService = {
   getAllUsers: async () => {
@@ -6,6 +7,26 @@ export const userService = {
       .selectFrom("users")
       .select(["id", "username", "email", "role", "created_at"])
       .execute();
+  },
+
+  getAllUsersWithPermissions: async () => {
+    const users = await db
+      .selectFrom("users")
+      .select(["id", "username", "email", "role", "created_at"])
+      .execute();
+
+    return await Promise.all(
+      users.map(async (user) => {
+        const permissions =
+          user.role === "admin"
+            ? (await permissionService.getAllPermissions()).map(
+                (p) => p.name
+              )
+            : await permissionService.getPermissionsForRole(user.role);
+
+        return { ...user, permissions };
+      })
+    );
   },
 
   getUserById: async (id: number) => {
