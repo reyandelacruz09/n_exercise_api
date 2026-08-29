@@ -54,6 +54,32 @@ export const userService = {
       .executeTakeFirst();
   },
 
+  updateUserProfile: async (
+    id: number,
+    data: { username?: string; email?: string; password_hash?: string }
+  ) => {
+    const updates: Record<string, unknown> = {};
+
+    if (data.username !== undefined && data.username !== "") {
+      updates.username = data.username;
+    }
+
+    if (data.email !== undefined && data.email !== "") {
+      updates.email = data.email;
+    }
+
+    if (data.password_hash !== undefined) {
+      updates.password_hash = data.password_hash;
+    }
+
+    return await db
+      .updateTable("users")
+      .set(updates)
+      .where("id", "=", id)
+      .returning(["id", "username", "email", "role", "created_at"])
+      .executeTakeFirst();
+  },
+
   deleteUser: async (id: number) => {
     return await db
       .deleteFrom("users")
