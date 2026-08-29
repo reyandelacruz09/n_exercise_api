@@ -6,6 +6,7 @@ import { OrdersTable } from "./orders";
 import { OrderItemsTable } from "./orderItems";
 import { StockTransactionsTable } from "./stockTransactions";
 import { AuditLogsTable } from "./auditLogs";
+import { PermissionsTable, RolePermissionsTable } from "./permissions";
 
 export interface Database {
   users: UsersTable;
@@ -15,4 +16,6 @@ export interface Database {
   order_items: OrderItemsTable;
   stock_transactions: StockTransactionsTable;
   audit_logs: AuditLogsTable;
+  permissions: PermissionsTable;
+  role_permissions: RolePermissionsTable;
 }

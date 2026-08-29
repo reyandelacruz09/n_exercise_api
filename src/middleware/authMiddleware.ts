@@ -13,9 +13,17 @@ export const authenticateToken = (
   const authHeader = req.headers.authorization;
 
   // Expected: Authorization: Bearer eyJhbGciOi...
-  const token = authHeader?.startsWith("Bearer ")
+  const headerToken = authHeader?.startsWith("Bearer ")
     ? authHeader.split(" ")[1]
     : null;
+
+  const cookieToken = (req.headers.cookie ?? "")
+    .split(";")
+    .map((c) => c.trim())
+    .find((c) => c.startsWith("token="))
+    ?.slice("token=".length) as string | undefined;
+
+  const token = headerToken ?? cookieToken;
 
   if (!token) {
     return res.status(401).json({
