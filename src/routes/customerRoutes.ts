@@ -25,5 +25,29 @@ router.delete(
     requirePermission("customers.manage"),
     customerController.deleteCustomer
 );
+router.get(
+    "/:id/form-assignment",
+    authenticateToken,
+    requirePermission("orders.manage"),
+    customerController.getFormAssignment
+);
+router.put(
+    "/:id/form-assignment",
+    authenticateToken,
+    requirePermission("orders.manage"),
+    customerController.setFormAssignment
+);
+router.put(
+    "/:id/password",
+    authenticateToken,
+    requirePermission("customers.manage"),
+    customerController.setCustomerPassword
+);
+router.get(
+    "/:id/password-status",
+    authenticateToken,
+    requirePermission("customers.manage"),
+    customerController.getCustomerPasswordStatus
+);
 
 export default router;

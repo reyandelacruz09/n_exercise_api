@@ -4,5 +4,7 @@ export interface CustomersTable {
     last_name: string;
     email: string;
     phone: string;
+    password_hash: string | null;
+    is_active: boolean;
     created_at: Date;
   }

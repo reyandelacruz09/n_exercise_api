@@ -2,6 +2,11 @@ import { Request, Response } from "express";
 import * as orderService from "../services/orderService";
 import { OrderValidationError } from "../services/orderService";
 import * as customerService from "../services/customerService";
+import {
+  validateCustomFields,
+  FormFieldValidationError,
+} from "../services/formFieldService";
+import { getEffectiveFormFields } from "../services/formResolutionService";
 import { auditLogService } from "../services/auditLogService";
 
 export const getOrders = async (
@@ -106,11 +111,23 @@ export const createOrder = async(
       });
     }
 
+    let customFields: Record<string, unknown> = {};
+    try {
+      const fields = await getEffectiveFormFields(Number(customer_id));
+      customFields = validateCustomFields(fields, req.body?.custom_fields);
+    } catch (error) {
+      if (error instanceof FormFieldValidationError) {
+        return res.status(400).json({ message: error.message });
+      }
+      throw error;
+    }
+
     const order = await orderService.createOrder(
       Number(customer_id),
       validatedItems,
       status,
-      (req as any).user?.id ?? null
+      (req as any).user?.id ?? null,
+      customFields
     );
 
     await auditLogService.log({
@@ -167,9 +184,33 @@ export const updateOrder = async (
       }
     }
 
+    const existingOrder = await orderService.getOrderById(Number(id));
+
+    if (!existingOrder) {
+      return res.status(404).json({
+        message: "Order not found",
+      });
+    }
+
+    let customFields: Record<string, unknown> | undefined;
+    if (req.body?.custom_fields !== undefined) {
+      try {
+        const fields = await getEffectiveFormFields(
+          existingOrder.customer_id
+        );
+        customFields = validateCustomFields(fields, req.body.custom_fields);
+      } catch (error) {
+        if (error instanceof FormFieldValidationError) {
+          return res.status(400).json({ message: error.message });
+        }
+        throw error;
+      }
+    }
+
     const order = await orderService.updateOrder(Number(id), {
       ...(status !== undefined && { status }),
       ...(validatedItems !== undefined && { items: validatedItems }),
+      ...(customFields !== undefined && { custom_fields: customFields }),
     });
 
     if (!order) {

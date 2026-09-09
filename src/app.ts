@@ -4,6 +4,11 @@ import usersRoute from "./routes/userRoutes";
 import customerRoutes from "./routes/customerRoutes";
 import productRoutes from "./routes/productRoutes";
 import orderRoutes from "./routes/orderRoutes";
+import formFieldRoutes from "./routes/formFieldRoutes";
+import formTemplateRoutes from "./routes/formTemplateRoutes";
+import customerGroupRoutes from "./routes/customerGroupRoutes";
+import customerPortalRoutes from "./routes/customerPortalRoutes";
+import customerAuthRoutes from "./routes/customerAuthRoutes";
 import authRoutes from "./routes/authRoutes";
 import dashboardRoutes from "./routes/dashboardRoutes";
 import stockTransactionRoutes from "./routes/stockTransactionRoutes";
@@ -27,6 +32,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("/auth/customer", customerAuthRoutes);
 app.use("/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/stock-transactions", stockTransactionRoutes);
@@ -34,6 +40,10 @@ app.use("/api/audit-logs", auditLogRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/form-templates", formTemplateRoutes);
+app.use("/api/groups", customerGroupRoutes);
+app.use("/api/customer", customerPortalRoutes);
+app.use("/api", formFieldRoutes);
 app.use("/api/users", usersRoute);
 
 const PORT = Number(process.env.PORT) || 3000;

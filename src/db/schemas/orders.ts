@@ -6,4 +6,5 @@ export interface OrdersTable {
     total_amount: number;
     created_by: number | null;
     created_at: Date;
+    custom_fields: Record<string, unknown> | null;
   }
