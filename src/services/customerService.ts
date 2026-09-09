@@ -15,6 +15,23 @@ export const getCustomerById = async (id: number) => {
     .executeTakeFirst();
 };
 
+export const getCustomerByEmail = async (email: string) => {
+  return await db
+    .selectFrom("customers")
+    .selectAll()
+    .where("email", "=", email)
+    .executeTakeFirst();
+};
+
+export const setCustomerPassword = async (id: number, password_hash: string) => {
+  return await db
+    .updateTable("customers")
+    .set({ password_hash })
+    .where("id", "=", id)
+    .returningAll()
+    .executeTakeFirst();
+};
+
 export const createCustomer = async (
   first_name: string,
   last_name: string,

@@ -32,7 +32,7 @@ export const createProduct = async (
   res: Response
 ) => {
   try {
-    const { name, price, stock, cost_price, reorder_level } = req.body;
+    const { name, price, stock, cost_price, reorder_level, is_active } = req.body;
 
     if (!name || price === undefined || stock === undefined) {
       return res.status(400).json({
@@ -45,7 +45,8 @@ export const createProduct = async (
       Number(price),
       Number(stock),
       cost_price !== undefined ? Number(cost_price) : null,
-      reorder_level !== undefined ? Number(reorder_level) : null
+      reorder_level !== undefined ? Number(reorder_level) : null,
+      is_active !== undefined ? Boolean(is_active) : true
     );
 
     await auditLogService.log({
@@ -75,14 +76,15 @@ export const updateProduct = async (
 ) => {
   try {
     const { id } = req.params;
-    const { name, price, stock, cost_price, reorder_level } = req.body;
+    const { name, price, stock, cost_price, reorder_level, is_active } = req.body;
 
     if (
       !name &&
       price === undefined &&
       stock === undefined &&
       cost_price === undefined &&
-      reorder_level === undefined
+      reorder_level === undefined &&
+      is_active === undefined
     ) {
       return res.status(400).json({
         message: "At least one field is required",
@@ -103,6 +105,7 @@ export const updateProduct = async (
       ...(stock !== undefined && { stock: Number(stock) }),
       ...(cost_price !== undefined && { cost_price: Number(cost_price) }),
       ...(reorder_level !== undefined && { reorder_level: Number(reorder_level) }),
+      ...(is_active !== undefined && { is_active: Boolean(is_active) }),
     });
 
     await auditLogService.log({
