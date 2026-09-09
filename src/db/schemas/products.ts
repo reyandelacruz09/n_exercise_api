@@ -5,4 +5,5 @@ export interface ProductsTable {
     stock: number;
     cost_price: number | null;
     reorder_level: number | null;
+    is_active: boolean;
   }

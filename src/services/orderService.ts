@@ -196,7 +196,8 @@ export const createOrder = async (
   customer_id: number,
   items: OrderItemInput[],
   status?: string,
-  created_by?: number | null
+  created_by?: number | null,
+  custom_fields: Record<string, unknown> = {}
 ) => {
   const finalStatus = status ?? "Pending";
 
@@ -215,6 +216,7 @@ export const createOrder = async (
         status: finalStatus,
         total_amount: total,
         created_by: created_by ?? null,
+        custom_fields,
         created_at: new Date(),
       })
       .returningAll()
@@ -245,6 +247,7 @@ export const updateOrder = async (
   data: {
     status?: string;
     items?: OrderItemInput[];
+    custom_fields?: Record<string, unknown>;
   }
 ) => {
   if (data.status !== undefined && !isAllowedStatus(data.status)) {
@@ -303,6 +306,9 @@ export const updateOrder = async (
       .set({
         ...(data.status !== undefined && { status: data.status }),
         ...(total_amount !== undefined && { total_amount }),
+        ...(data.custom_fields !== undefined && {
+          custom_fields: data.custom_fields,
+        }),
       })
       .where("id", "=", id)
       .returningAll()

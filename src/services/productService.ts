@@ -20,7 +20,8 @@ export const createProduct = async (
   price: number,
   stock: number,
   cost_price?: number | null,
-  reorder_level?: number | null
+  reorder_level?: number | null,
+  is_active?: boolean
 ) => {
   return await db
     .insertInto("products")
@@ -30,6 +31,7 @@ export const createProduct = async (
       stock,
       cost_price: cost_price ?? null,
       reorder_level: reorder_level ?? null,
+      is_active: is_active ?? true,
     })
     .returningAll()
     .executeTakeFirst();
@@ -43,6 +45,7 @@ export const updateProduct = async (
     stock?: number;
     cost_price?: number | null;
     reorder_level?: number | null;
+    is_active?: boolean;
   }
 ) => {
   return await db
