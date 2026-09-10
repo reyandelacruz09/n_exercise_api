@@ -293,7 +293,7 @@ export const validateCustomFields = (
   customFields: unknown
 ): Record<string, unknown> => {
   if (customFields === undefined || customFields === null) {
-    return {};
+    customFields = {};
   }
 
   if (typeof customFields !== "object" || Array.isArray(customFields)) {
